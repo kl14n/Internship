@@ -4,7 +4,7 @@ const auth = require('../middleware/auth')
 
 const router = express.Router()
 
-router.post('/users', async (req, res) => {
+router.post('/register', async (req, res) => {
     // Create a new user
     try {
         const user = new User(req.body)
@@ -16,7 +16,7 @@ router.post('/users', async (req, res) => {
     }
 })
 
-router.post('/users/login', async(req, res) => {
+router.post('/login', async(req, res) => {
     //Login a registered user
     try {
         const { email, password } = req.body
@@ -44,7 +44,7 @@ router.post('/users/me/logout', auth, async (req, res) => {
             return token.token != req.token
         })
         await req.user.save()
-        res.send()
+        res.status(200).send('You have been logged out!')
     } catch (error) {
         res.status(500).send(error)
     }
@@ -55,7 +55,7 @@ router.post('/users/me/logoutall', auth, async(req, res) => {
     try {
         req.user.tokens.splice(0, req.user.tokens.length)
         await req.user.save()
-        res.send()
+        res.status(200).send('You have logged out everywhere!')
     } catch (error) {
         res.status(500).send(error)
     }
