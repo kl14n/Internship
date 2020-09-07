@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "env-cmd -f ./registration/.env nodemon ./registration/src/app.js"
+    "start": "env-cmd -f apps/service-auth/.env nodemon apps/service-auth/src/app.js"
   },
   "license": "MIT",
   "dependencies": {
