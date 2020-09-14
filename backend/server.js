@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const errorHandler = require('_middleware/error-handler');
+const errorHandler = require('middlewares/error-handler');
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -14,10 +14,10 @@ app.use(cookieParser());
 app.use(cors());
 
 // api routes
-app.use('/accounts', require('./accounts/accounts.controller'));
+app.use('/accounts', require('./routes/routes'));
 
 // swagger docs route
-app.use('/api-docs', require('_helpers/swagger'));
+app.use('/api-docs', require('./routes/swagger'));
 
 // global error handler
 app.use(errorHandler);

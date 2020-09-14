@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
-const validateRequest = require('_middleware/validate-request');
-const authorize = require('_middleware/authorize')
+const validateRequest = require('middlewares/validate-request');
+const authorize = require('middlewares/authorize')
 const Role = require('../database/role');
 const accountService = require('../services/account.service');
 

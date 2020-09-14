@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: Node.js Boilerplate Sign-up and Verification API
-  description: Node.js + MongoDB - Boilerplate API with email sign-up, verification, authentication and forgot password
+  title: Node.js - Security APIs with Authentication, Authorization and Role-based control
+  description: Node.js + MongoDB - Security APIs with email sign-up, verification, authentication and forgot password
   version: 1.0.0
 
 servers:
@@ -23,7 +23,7 @@ paths:
               properties:
                 email:
                   type: string
-                  example: "jason@example.com"
+                  example: "vietdung1@example.com"
                 password:
                   type: string
                   example: "pass123"
@@ -52,13 +52,13 @@ paths:
                     example: "Mr"
                   firstName:
                     type: string
-                    example: "Jason"
+                    example: "Viet Dung"
                   lastName:
                     type: string
-                    example: "Watmore"
+                    example: "Nguyen"
                   email:
                     type: string
-                    example: "jason@example.com"
+                    example: "vietdung1@example.com"
                   role:
                     type: string
                     example: "Admin"
@@ -115,13 +115,13 @@ paths:
                     example: "Mr"
                   firstName:
                     type: string
-                    example: "Jason"
+                    example: "Viet Dung"
                   lastName:
                     type: string
-                    example: "Watmore"
+                    example: "Nguyen"
                   email:
                     type: string
-                    example: "jason@example.com"
+                    example: "vietdung1@example.com"
                   role:
                     type: string
                     example: "Admin"
@@ -207,13 +207,13 @@ paths:
                   example: "Mr"
                 firstName:
                   type: string
-                  example: "Jason"
+                  example: "Viet Dung"
                 lastName:
                   type: string
-                  example: "Watmore"
+                  example: "Nguyen"
                 email:
                   type: string
-                  example: "jason@example.com"
+                  example: "vietdung1@example.com"
                 password:
                   type: string
                   example: "pass123"
@@ -291,7 +291,7 @@ paths:
               properties:
                 email:
                   type: string
-                  example: "jason@example.com"
+                  example: "vietdung1@example.com"
               required:
                 - email
       responses:
@@ -388,6 +388,89 @@ paths:
                     type: string
                     example: "Invalid token"
   /accounts:
+    post:
+          summary: Create a new account
+          description: Restricted to admin users.
+          operationId: createAccount
+          security:
+            - bearerAuth: []
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      example: "Mr"
+                    firstName:
+                      type: string
+                      example: "Viet Dung"
+                    lastName:
+                      type: string
+                      example: "Nguyen"
+                    email:
+                      type: string
+                      example: "vietdung1@example.com"
+                    password:
+                      type: string
+                      example: "pass123"
+                    confirmPassword:
+                      type: string
+                      example: "pass123"
+                    role:
+                      type: string
+                      enum: [Admin, User]
+                  required:
+                    - title
+                    - firstName
+                    - lastName
+                    - email
+                    - password
+                    - confirmPassword
+                    - role
+          responses:
+            "200":
+              description: Account created successfully, verification is not required for accounts created with this endpoint. The details of the new account are returned.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "5eb12e197e06a76ccdefc121"
+                      title:
+                        type: string
+                        example: "Mr"
+                      firstName:
+                        type: string
+                        example: "Viet Dung"
+                      lastName:
+                        type: string
+                        example: "Nguyen"
+                      email:
+                        type: string
+                        example: "vietdung1@example.com"
+                      role:
+                        type: string
+                        example: "Admin"
+                      created:
+                        type: string
+                        example: "2020-05-05T09:12:57.848Z"
+            "400":
+              description: Email is already registered
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Email 'vietdung1@example.com' is already registered"
+            "401":
+              $ref: "#/components/responses/UnauthorizedError"
     get:
       summary: Get a list of all accounts in the boilerplate api
       description: Restricted to admin users.
@@ -412,13 +495,13 @@ paths:
                       example: "Mr"
                     firstName:
                       type: string
-                      example: "Jason"
+                      example: "Viet Dung"
                     lastName:
                       type: string
-                      example: "Watmore"
+                      example: "Nguyen"
                     email:
                       type: string
-                      example: "jason@example.com"
+                      example: "vietdung1@example.com"
                     role:
                       type: string
                       example: "Admin"
@@ -428,89 +511,6 @@ paths:
                     updated:
                       type: string
                       example: "2020-05-08T03:11:21.553Z"
-        "401":
-          $ref: "#/components/responses/UnauthorizedError"
-    post:
-      summary: Create a new account
-      description: Restricted to admin users.
-      operationId: createAccount
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  example: "Mr"
-                firstName:
-                  type: string
-                  example: "Jason"
-                lastName:
-                  type: string
-                  example: "Watmore"
-                email:
-                  type: string
-                  example: "jason@example.com"
-                password:
-                  type: string
-                  example: "pass123"
-                confirmPassword:
-                  type: string
-                  example: "pass123"
-                role:
-                  type: string
-                  enum: [Admin, User]
-              required:
-                - title
-                - firstName
-                - lastName
-                - email
-                - password
-                - confirmPassword
-                - role
-      responses:
-        "200":
-          description: Account created successfully, verification is not required for accounts created with this endpoint. The details of the new account are returned.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    example: "5eb12e197e06a76ccdefc121"
-                  title:
-                    type: string
-                    example: "Mr"
-                  firstName:
-                    type: string
-                    example: "Jason"
-                  lastName:
-                    type: string
-                    example: "Watmore"
-                  email:
-                    type: string
-                    example: "jason@example.com"
-                  role:
-                    type: string
-                    example: "Admin"
-                  created:
-                    type: string
-                    example: "2020-05-05T09:12:57.848Z"
-        "400":
-          description: Email is already registered
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Email 'jason@example.com' is already registered"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
   /accounts/{id}:
@@ -544,13 +544,13 @@ paths:
                     example: "Mr"
                   firstName:
                     type: string
-                    example: "Jason"
+                    example: "Viet Dung"
                   lastName:
                     type: string
-                    example: "Watmore"
+                    example: "Nguyen"
                   email:
                     type: string
-                    example: "jason@example.com"
+                    example: "vietdung1@example.com"
                   role:
                     type: string
                     example: "Admin"
@@ -582,13 +582,13 @@ paths:
                   example: "Mr"
                 firstName:
                   type: string
-                  example: "Jason"
+                  example: "Viet Dung"
                 lastName:
                   type: string
-                  example: "Watmore"
+                  example: "Nguyen"
                 email:
                   type: string
-                  example: "jason@example.com"
+                  example: "vietdung1@example.com"
                 password:
                   type: string
                   example: "pass123"
@@ -614,13 +614,13 @@ paths:
                     example: "Mr"
                   firstName:
                     type: string
-                    example: "Jason"
+                    example: "Viet Dung"
                   lastName:
                     type: string
-                    example: "Watmore"
+                    example: "Nguyen"
                   email:
                     type: string
-                    example: "jason@example.com"
+                    example: "vietdung1@example.com"
                   role:
                     type: string
                     example: "Admin"
