@@ -96,7 +96,8 @@ async function register(params, origin) {
             email: params.email
         })) {
         // send already registered error in email to prevent account enumeration
-        return await sendAlreadyRegisteredEmail(params.email, origin);
+        // return await sendAlreadyRegisteredEmail(params.email, origin);
+        throw 'Email has already registered!';
     }
 
     // create account object
