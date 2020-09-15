@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Node.js - Security APIs with Authentication, Authorization with Role-based control
+  title: Node.js - Security APIs Authentication and Authorization with Role-based control
   description: Node.js + MongoDB - Security APIs with email sign-up, verification, authentication and forgot password
   version: 1.0.0
 

@@ -1,10 +1,10 @@
-const config = require('../config/config.json');
+const config = require('src/config/config.json');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require("crypto");
-const sendEmail = require('middlewares/send-email');
-const db = require('database/db');
-const Role = require('database/role');
+const sendEmail = require('src/middlewares/send-email');
+const db = require('src/database/db');
+const Role = require('src/database/role');
 
 module.exports = {
     authenticate,

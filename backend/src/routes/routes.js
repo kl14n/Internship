@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
-const validateRequest = require('middlewares/validate-request');
-const authorize = require('middlewares/authorize')
-const Role = require('../database/role');
-const accountService = require('../services/account.service');
+const validateRequest = require('src/middlewares/validate-request');
+const authorize = require('src/middlewares/authorize')
+const Role = require('src/database/role');
+const accountService = require('src/services/account.service');
 
 // routes
 router.post('/authenticate', authenticateSchema, authenticate);

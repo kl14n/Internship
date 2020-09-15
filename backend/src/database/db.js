@@ -1,5 +1,5 @@
 //MongoDB wrapper
-const config = require('../config/config.json');
+const config = require('src/config/config.json');
 const mongoose = require('mongoose');
 const connectionOptions = {
     useCreateIndex: true,
@@ -12,8 +12,8 @@ mongoose.connect(process.env.MONGODB_URI || config.connectionString, connectionO
 mongoose.Promise = global.Promise;
 
 module.exports = {
-    Account: require('models/account.model'),
-    RefreshToken: require('models/refresh-token.model'),
+    Account: require('src/models/account.model'),
+    RefreshToken: require('src/models/refresh-token.model'),
     isValidId
 };
 
