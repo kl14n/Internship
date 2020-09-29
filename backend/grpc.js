@@ -5,16 +5,9 @@ const setup = require(__dirname + '/src/class/setup');
 const fs = require('fs');
 const chunkingStreams = require('chunking-streams');
 const SizeChunker = chunkingStreams.SizeChunker;
-const SeparatorChunker = chunkingStreams.SeparatorChunker;
-const LineCounter = chunkingStreams.LineCounter;
-
-const protobuf = requite('protobufjs')
-
 
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
-const { response } = require('express');
-// const { mainModule } = require('process');
 
 const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,
@@ -39,7 +32,7 @@ countActivity = async() =>{
         {}
     )
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -60,7 +53,7 @@ listActivity = async() =>{
         {}
     )
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -81,7 +74,7 @@ listRepo = async() =>{
         {}
     )
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -102,7 +95,7 @@ listUser = async() =>{
         {}
     )
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -123,7 +116,7 @@ listCatalog  = async() =>{
         {}
     )
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -146,7 +139,7 @@ getUserInfo = async() =>{
         }
     )
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -169,7 +162,7 @@ getCatalogInfo = async() =>{
         }
     )
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -194,7 +187,7 @@ registerUser = async() =>{
     );
         
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -219,7 +212,7 @@ registerCatalog = async() =>{
     );
         
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -253,7 +246,7 @@ createRepo = async() =>{
     );
         
     try {
-        await client.setup(request.toRequest(), (error, response) => {
+        await client.setup(request.setupToRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -266,118 +259,71 @@ createRepo = async() =>{
     }
 };
 
-//2
-const filePath = __dirname + '/files/test.csv'
-const input = fs.createReadStream(filePath)
 
+//2
+const fileName = 'test2'
+const filePath = __dirname + `/files/${fileName}.csv`
+const input = fs.createReadStream(filePath);
+const stat = fs.statSync(filePath)
+const size = stat.size;
+const defaultSize = 1024 * 256
+const blocks = size/defaultSize
 
 
 uploadFile = async()=> {
-    let route = Buffer.from('/hv_demo/repo/internship_demo','utf-8');
+    let route = Buffer.from('StorageManager','utf-8');
     let param = Buffer.from(JSON.stringify({
         action: 'updateRepo',
         parameter: {
             repoId: '0',
             meta: {
                 user: 'HiVi',
-                name: '/hv_demo/repo/internship_demo',
+                name: fileName,
                 type: 'FILE',
                 format: 'csv',
-                label: 'test',
-                extra_field_1: '',
-                extra_field_2: ''
+                label: 'HiVi'
             }
-        }
-    }),'utf-8');
+    }}),'utf-8');
 
-    // final data
-    let fileBuffer = Buffer.concat([route,param]);
-    chunker = new LineCounter({
-        numLines: 1,
-        flushTail: false
-    });
+    let call = client.upload_file();
 
-    await client.upload_file({data:route},(err,response) => {
-        if(err){
-            return;
+    call.on('data', (response) => {
+        let res = JSON.parse(response.data.toString());
+        console.log(res);
+        if(res.action.status == 'service state: 1'){
+            chunker = new SizeChunker({
+                chunkSize: defaultSize,
+                flushTail: true
+            })
+            
+            chunker.on('data', chunk => {
+                call.write({data:chunk.data})
+            })
+
+            chunker.on('chunkEnd', (id, done) => {
+                console.log(id*100.0/blocks, '%');
+                done();
+            })
+
+            input.on('end',() => {
+                call.end();
+            })
+
+            input.pipe(chunker)
         }
-        console.log(response)
-        // client.upload_file({data:param},(err,response) => {
-        //     if(err){
-        //         return;
-        //     }
-        //     console.log(response)
-        // })
     })
 
+    call.on('error', (err) => {
+        console.log(err);
+        call.end();
+    })
     
+    call.on('end', ()=>{
+        console.log('The stream has ended!');
+    })
 
-    // b = await client.upload_file({data:param})
-    // b.on('data', message=> {
-    //     console.log(message)
-    // })
-    // chunker.on('data',async chunk => {
-    //     console.log(chunk.data.toString())
-    //    await  client.upload_file({data:chunk.data},(err,res) => {
-    //        try{
-    //             if(err){
-    //                 console.log(err);
-    //             }
-    //             console.log(res);
-    //         }
-    //         catch(err){
-    //             console.log(err);
-    //         }
-    //      })
-    // })
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-    
-    // console.log(request.data)
-    // try{
-    //     await client.upload_file(request, (err,response)=> {
-    //         if(error){
-    //             console.log(err)
-    //             return
-    //         }
-    //         console.log(response)
-    //     })
-    //    console.log(res)
-    //     if(JSON.parse(res).action.code == '200'){
-    //         chunker = new SizeChunker({
-    //             chunkSize: 512,
-    //             flushTail: true
-    //         })
-    //     }
-    // }
-    // catch(err){
-    //     console.log(err)
-    // }
-
-    // chunker.on('data', (chunk) => {
-    //     client.upload_file({ code: 1, data: chunk.data.toString() }, (err, response) => {
-    //         console.log(response.code)
-    //     })
-    // })
-    // input.pipe(chunker)
-    // input.on('end', () => {
-    //     client.upload_file({ code: 2, data: "" }, (err, response) => {
-    //         console.log(response.code)
-    //         input.close()
-    //     })
-    // })
+    call.write({data:route})
+    call.write({data:param})
 }
 
 
@@ -391,7 +337,6 @@ uploadFile = async()=> {
 
 
 
-/*
 function main() {
     countActivity();
     listActivity();
@@ -400,6 +345,8 @@ function main() {
     getUserInfo();
     getCatalogInfo();
     registerUser();
+    registerCatalog();
+    uploadFile()
 }
+
 main()
-*/

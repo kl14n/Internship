@@ -9,7 +9,7 @@ class log {
         this.#jsonParam = param
     }
     
-    toRequest(){
+    setupToRequest(){
         return {
             route: this.#route,
             jsonAction: this.#jsonAction,

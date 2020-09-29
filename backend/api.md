@@ -231,7 +231,7 @@ For version 0.1.0-SNAPSHOT, it has 3 basic utilities: StorageManager, FileQuery 
                     repoId: String,
                     meta: {
                         user: String,
-                        name: String (path name),
+                        name: String (file name),
                         type: String (FILE/PATH),
                         format: String (exp: csv),
                         label: String (catalog),
