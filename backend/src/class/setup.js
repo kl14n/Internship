@@ -1,4 +1,4 @@
-class log { 
+class setup { 
     #route = ""
     #jsonAction = ""
     #jsonParam = ""
@@ -18,4 +18,4 @@ class log {
     }
 }
 
-module.exports = log;
+module.exports = setup;

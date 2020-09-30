@@ -1,20 +1,18 @@
+// Proto path
 const PROTO_PATH = __dirname + '/proto/basic_api.proto';
 
+// Class
 const setup = require(__dirname + '/src/class/setup');
 
+// Upload chunking stream
 const fs = require('fs');
 const chunkingStreams = require('chunking-streams');
 const SizeChunker = chunkingStreams.SizeChunker;
-const SeparatorChunker = chunkingStreams.SeparatorChunker;
-const LineCounter = chunkingStreams.LineCounter;
 
-const protobuf = requite('protobufjs')
-
-
+// gRPC
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
-const { response } = require('express');
-// const { mainModule } = require('process');
+const { encode } = require('punycode');
 
 const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,
@@ -266,132 +264,168 @@ createRepo = async() =>{
     }
 };
 
+
 //2
-const filePath = __dirname + '/files/test.csv'
-const input = fs.createReadStream(filePath)
+const fileName = 'test2'
+const uploadPath = __dirname + `/data/upload/${fileName}.csv`
+const input = fs.createReadStream(uploadPath)
+const defaultSize = 1024 * 256
 
 
+// const stat = fs.statSync(uploadPath)
+// const size = stat.size
+// const blocks = size/defaultSize
+ 
 
-uploadFile = async()=> {
-    let route = Buffer.from('/hv_demo/repo/internship_demo','utf-8');
+uploadFile = ()=> {
+    let route = Buffer.from('StorageManager','utf-8');
     let param = Buffer.from(JSON.stringify({
         action: 'updateRepo',
         parameter: {
             repoId: '0',
             meta: {
                 user: 'HiVi',
-                name: '/hv_demo/repo/internship_demo',
+                name: fileName,
                 type: 'FILE',
                 format: 'csv',
-                label: 'test',
-                extra_field_1: '',
-                extra_field_2: ''
+                label: 'HiVi'
             }
-        }
-    }),'utf-8');
+    }}),'utf-8');
 
-    // final data
-    let fileBuffer = Buffer.concat([route,param]);
-    chunker = new LineCounter({
-        numLines: 1,
-        flushTail: false
-    });
+    let call = client.upload_file();
 
-    await client.upload_file({data:route},(err,response) => {
-        if(err){
-            return;
+    call.on('data', (response) => {
+        let res = JSON.parse(response.data.toString());
+        console.log(res);
+
+        if(res.action.status == 'service state: 1'){
+            chunker = new SizeChunker({
+                chunkSize: defaultSize,
+                flushTail: true
+            })
+            
+            chunker.on('data', chunk => {
+                call.write({data:chunk.data})
+            })
+
+            chunker.on('chunkEnd', (id, done) => {
+                done()
+            })
+
+            input.on('end',() => {
+                call.end();
+            })
+
+            input.pipe(chunker)
         }
-        console.log(response)
-        // client.upload_file({data:param},(err,response) => {
-        //     if(err){
-        //         return;
-        //     }
-        //     console.log(response)
-        // })
     })
 
+    call.on('error', (err) => {
+        console.log(err);
+        call.end();
+    })
     
+    call.on('end', ()=>{
+        console.log('The stream has ended!');
+    })
 
-    // b = await client.upload_file({data:param})
-    // b.on('data', message=> {
-    //     console.log(message)
-    // })
-    // chunker.on('data',async chunk => {
-    //     console.log(chunk.data.toString())
-    //    await  client.upload_file({data:chunk.data},(err,res) => {
-    //        try{
-    //             if(err){
-    //                 console.log(err);
-    //             }
-    //             console.log(res);
-    //         }
-    //         catch(err){
-    //             console.log(err);
-    //         }
-    //      })
-    // })
+    call.write({data:route})
+    call.write({data:param})
+}
 
-    
-    
+// FileQuery
 
-
-
-
-
-
-
-
-
-
-
-    
-    // console.log(request.data)
-    // try{
-    //     await client.upload_file(request, (err,response)=> {
-    //         if(error){
-    //             console.log(err)
-    //             return
-    //         }
-    //         console.log(response)
-    //     })
-    //    console.log(res)
-    //     if(JSON.parse(res).action.code == '200'){
-    //         chunker = new SizeChunker({
-    //             chunkSize: 512,
-    //             flushTail: true
-    //         })
-    //     }
-    // }
-    // catch(err){
-    //     console.log(err)
-    // }
-
-    // chunker.on('data', (chunk) => {
-    //     client.upload_file({ code: 1, data: chunk.data.toString() }, (err, response) => {
-    //         console.log(response.code)
-    //     })
-    // })
-    // input.pipe(chunker)
-    // input.on('end', () => {
-    //     client.upload_file({ code: 2, data: "" }, (err, response) => {
-    //         console.log(response.code)
-    //         input.close()
-    //     })
-    // })
+//1
+searchStorage = async() => {
+    let request = new setup (
+        'FileQuery',
+        'searchStorage',
+        {
+            repoId: '0',
+            expr: {
+                // path: '/hv_demo/repo/internship_demo/data/1601364735836.HiVi.test2.csv.bin'
+                // select: [],
+                // where: [],
+                // order_by: {},
+                // limit: ''
+            }
+        }
+    )
+    try {
+        await client.setup(request.toRequest(), (error, response) => {
+            if(error){
+                console.log(error);
+                return;
+            }
+            console.log(response);
+            console.log(JSON.parse(response.result))
+        });
+    }
+    catch(err){
+        console.log(err)
+    }
 }
 
 
 
+//2
+
+const downloadPath = __dirname + `/data/download/test.csv`
+const output = fs.createWriteStream(downloadPath)
+
+downloadFile = ()=> {
+    let route = Buffer.from('FileQuery','utf-8');
+    let param = Buffer.from(JSON.stringify({
+        action: 'loadData',
+        parameter: {
+            path: `/hv_demo/repo/internship_demo/data/1601357423390.HiVi.test.csv.bin`
+    }}),'utf-8');
+
+    let call = client.download_file();
+
+
+    let state = 0;
+    call.on('data', (response) => {
+
+        if(state == 0) {
+            let res = JSON.parse(response.data.toString());
+            if(res.action.code == '200'){
+                state++;
+                call.write({data:param});
+            } else{
+                call.end()
+            }
+        } else if(state == 1) {
+            let res = JSON.parse(response.data.toString());
+            if(res.action.code == '200'){
+                state++;
+                call.write({data: Buffer.from('200')});
+            } else{
+                call.end();
+            }
+        } else {
+            output.write(response.data)
+        }
+    })
+
+    call.on('error', (err) => {
+        console.log(err);
+        call.end();
+    })
+    
+    call.on('end', ()=>{
+        console.log('The stream has ended!');
+    })
+
+    call.write({data:route})
+}
+
+
+searchStorage()
 
 
 
 
-
-
-
-
-
-/*
 function main() {
     countActivity();
     listActivity();
@@ -400,6 +434,8 @@ function main() {
     getUserInfo();
     getCatalogInfo();
     registerUser();
+    registerCatalog();
+    uploadFile()
 }
+
 main()
-*/

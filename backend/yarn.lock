@@ -309,18 +309,6 @@ buffer-equal-constant-time@1.0.1:
   resolved "https://registry.yarnpkg.com/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz#f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819"
   integrity sha1-+OcRMvf/5uAaXJaXpMbz5I1cyBk=
 
-buffer-indexof@~0.0.0:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/buffer-indexof/-/buffer-indexof-0.0.2.tgz#ed0f36b7ae166a66a7cd174c0467ae8dedf008f5"
-  integrity sha1-7Q82t64WamanzRdMBGeuje3wCPU=
-
-buffer-split@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/buffer-split/-/buffer-split-1.0.0.tgz#4427dbff53731b61d7a71aba47f503396613784a"
-  integrity sha1-RCfb/1NzG2HXpxq6R/UDOWYTeEo=
-  dependencies:
-    buffer-indexof "~0.0.0"
-
 bytebuffer@~5:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/bytebuffer/-/bytebuffer-5.0.1.tgz#582eea4b1a873b6d020a48d58df85f0bba6cfddd"
@@ -399,6 +387,14 @@ cli-boxes@^2.2.0:
   resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-2.2.1.tgz#ddd5035d25094fce220e9cab40a45840a440318f"
   integrity sha512-y4coMcylgSCdVinjiDBuR8PCC2bLjyGTwEmPb9NHR/QaNU6EUOXcTY/s6VjGMD6ENSEaeQYHCY0GNGS5jfMwPw==
 
+cli-progress@^3.8.2:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-3.8.2.tgz#abaf1fc6d6401351f16f068117a410554a0eb8c7"
+  integrity sha512-qRwBxLldMSfxB+YGFgNRaj5vyyHe1yMpVeDL79c+7puGujdKJHQHydgqXDcrkvQgJ5U/d3lpf6vffSoVVUftVQ==
+  dependencies:
+    colors "^1.1.2"
+    string-width "^4.2.0"
+
 cliui@^3.0.3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/cliui/-/cliui-3.2.0.tgz#120601537a916d29940f934da3b48d585a39213d"
@@ -431,6 +427,11 @@ color-name@~1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
+
+colors@^1.1.2:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
+  integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
 
 colour@~0.7.1:
   version "0.7.1"
@@ -1532,7 +1533,7 @@ protobufjs@^5.0.3:
     glob "^7.0.5"
     yargs "^3.10.0"
 
-protobufjs@^6.10.1, protobufjs@^6.8.6:
+protobufjs@^6.8.6:
   version "6.10.1"
   resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.10.1.tgz#e6a484dd8f04b29629e9053344e3970cccf13cd2"
   integrity sha512-pb8kTchL+1Ceg4lFd5XUpK8PdWacbvV5SK2ULH2ebrYtl4GjJmS24m6CKME67jzV53tbJxHlnNOSqQHbTsR9JQ==
@@ -1821,7 +1822,7 @@ string-width@^3.0.0:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^5.1.0"
 
-string-width@^4.0.0, string-width@^4.1.0:
+string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.0.tgz#952182c46cc7b2c313d1596e623992bd163b72b5"
   integrity sha512-zUz5JD+tgqtuDjMhwIg5uFVV3dtqZ9yQJlZVfq4I01/K5Paj5UHj7VyrQOJvzawSVlKpObApbfD0Ed6yJc+1eg==
