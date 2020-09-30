@@ -2,7 +2,7 @@
 const PROTO_PATH = __dirname + '/proto/basic_api.proto';
 
 // Class
-const setup = require(__dirname + '/src/class/setup');
+const setup = require(__dirname + '/class/setup');
 
 // Upload chunking stream
 const fs = require('fs');
@@ -12,7 +12,6 @@ const SizeChunker = chunkingStreams.SizeChunker;
 // gRPC
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
-const { encode } = require('punycode');
 
 const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,
@@ -370,7 +369,7 @@ searchStorage = async() => {
 
 //2
 
-const downloadPath = __dirname + `/data/download/test.csv`
+const downloadPath = __dirname + `/data/download/test3`
 const output = fs.createWriteStream(downloadPath)
 
 downloadFile = ()=> {
@@ -382,9 +381,8 @@ downloadFile = ()=> {
     }}),'utf-8');
 
     let call = client.download_file();
-
-
     let state = 0;
+
     call.on('data', (response) => {
 
         if(state == 0) {
@@ -421,21 +419,16 @@ downloadFile = ()=> {
 }
 
 
-searchStorage()
-
-
-
-
-function main() {
-    countActivity();
-    listActivity();
-    listRepo();
-    listUser();
-    getUserInfo();
-    getCatalogInfo();
-    registerUser();
-    registerCatalog();
-    uploadFile()
+module.exports = {
+    countActivity,
+    listActivity,
+    listRepo,
+    listUser,
+    getUserInfo,
+    getCatalogInfo,
+    registerUser,
+    registerCatalog,
+    uploadFile,
+    searchStorage,
+    downloadFile
 }
-
-main()
