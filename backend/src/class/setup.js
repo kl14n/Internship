@@ -1,4 +1,4 @@
-class log { 
+class setup { 
     #route = ""
     #jsonAction = ""
     #jsonParam = ""
@@ -9,7 +9,7 @@ class log {
         this.#jsonParam = param
     }
     
-    setupToRequest(){
+    toRequest(){
         return {
             route: this.#route,
             jsonAction: this.#jsonAction,
@@ -18,4 +18,4 @@ class log {
     }
 }
 
-module.exports = log;
+module.exports = setup;

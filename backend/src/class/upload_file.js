@@ -15,4 +15,4 @@ class upload {
     }
 }
 
-module.exports = upload_file;
+module.exports = upload;

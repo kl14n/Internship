@@ -1,13 +1,18 @@
+// Proto path
 const PROTO_PATH = __dirname + '/proto/basic_api.proto';
 
+// Class
 const setup = require(__dirname + '/src/class/setup');
 
+// Upload chunking stream
 const fs = require('fs');
 const chunkingStreams = require('chunking-streams');
 const SizeChunker = chunkingStreams.SizeChunker;
 
+// gRPC
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
+const { encode } = require('punycode');
 
 const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,
@@ -32,7 +37,7 @@ countActivity = async() =>{
         {}
     )
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -53,7 +58,7 @@ listActivity = async() =>{
         {}
     )
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -74,7 +79,7 @@ listRepo = async() =>{
         {}
     )
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -95,7 +100,7 @@ listUser = async() =>{
         {}
     )
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -116,7 +121,7 @@ listCatalog  = async() =>{
         {}
     )
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -139,7 +144,7 @@ getUserInfo = async() =>{
         }
     )
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -162,7 +167,7 @@ getCatalogInfo = async() =>{
         }
     )
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -187,7 +192,7 @@ registerUser = async() =>{
     );
         
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -212,7 +217,7 @@ registerCatalog = async() =>{
     );
         
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -246,7 +251,7 @@ createRepo = async() =>{
     );
         
     try {
-        await client.setup(request.setupToRequest(), (error, response) => {
+        await client.setup(request.toRequest(), (error, response) => {
             if(error){
                 console.log(error);
                 return;
@@ -262,15 +267,17 @@ createRepo = async() =>{
 
 //2
 const fileName = 'test2'
-const filePath = __dirname + `/files/${fileName}.csv`
-const input = fs.createReadStream(filePath);
-const stat = fs.statSync(filePath)
-const size = stat.size;
+const uploadPath = __dirname + `/data/upload/${fileName}.csv`
+const input = fs.createReadStream(uploadPath)
 const defaultSize = 1024 * 256
-const blocks = size/defaultSize
 
 
-uploadFile = async()=> {
+// const stat = fs.statSync(uploadPath)
+// const size = stat.size
+// const blocks = size/defaultSize
+ 
+
+uploadFile = ()=> {
     let route = Buffer.from('StorageManager','utf-8');
     let param = Buffer.from(JSON.stringify({
         action: 'updateRepo',
@@ -290,6 +297,7 @@ uploadFile = async()=> {
     call.on('data', (response) => {
         let res = JSON.parse(response.data.toString());
         console.log(res);
+
         if(res.action.status == 'service state: 1'){
             chunker = new SizeChunker({
                 chunkSize: defaultSize,
@@ -301,8 +309,7 @@ uploadFile = async()=> {
             })
 
             chunker.on('chunkEnd', (id, done) => {
-                console.log(id*100.0/blocks, '%');
-                done();
+                done()
             })
 
             input.on('end',() => {
@@ -326,13 +333,95 @@ uploadFile = async()=> {
     call.write({data:param})
 }
 
+// FileQuery
+
+//1
+searchStorage = async() => {
+    let request = new setup (
+        'FileQuery',
+        'searchStorage',
+        {
+            repoId: '0',
+            expr: {
+                // path: '/hv_demo/repo/internship_demo/data/1601364735836.HiVi.test2.csv.bin'
+                // select: [],
+                // where: [],
+                // order_by: {},
+                // limit: ''
+            }
+        }
+    )
+    try {
+        await client.setup(request.toRequest(), (error, response) => {
+            if(error){
+                console.log(error);
+                return;
+            }
+            console.log(response);
+            console.log(JSON.parse(response.result))
+        });
+    }
+    catch(err){
+        console.log(err)
+    }
+}
 
 
 
+//2
+
+const downloadPath = __dirname + `/data/download/test.csv`
+const output = fs.createWriteStream(downloadPath)
+
+downloadFile = ()=> {
+    let route = Buffer.from('FileQuery','utf-8');
+    let param = Buffer.from(JSON.stringify({
+        action: 'loadData',
+        parameter: {
+            path: `/hv_demo/repo/internship_demo/data/1601357423390.HiVi.test.csv.bin`
+    }}),'utf-8');
+
+    let call = client.download_file();
 
 
+    let state = 0;
+    call.on('data', (response) => {
+
+        if(state == 0) {
+            let res = JSON.parse(response.data.toString());
+            if(res.action.code == '200'){
+                state++;
+                call.write({data:param});
+            } else{
+                call.end()
+            }
+        } else if(state == 1) {
+            let res = JSON.parse(response.data.toString());
+            if(res.action.code == '200'){
+                state++;
+                call.write({data: Buffer.from('200')});
+            } else{
+                call.end();
+            }
+        } else {
+            output.write(response.data)
+        }
+    })
+
+    call.on('error', (err) => {
+        console.log(err);
+        call.end();
+    })
+    
+    call.on('end', ()=>{
+        console.log('The stream has ended!');
+    })
+
+    call.write({data:route})
+}
 
 
+searchStorage()
 
 
 
