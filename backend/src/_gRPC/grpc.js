@@ -420,15 +420,17 @@ downloadFile = ()=> {
 
 
 module.exports = {
-    countActivity,
-    listActivity,
-    listRepo,
-    listUser,
-    getUserInfo,
-    getCatalogInfo,
-    registerUser,
-    registerCatalog,
-    uploadFile,
-    searchStorage,
-    downloadFile
+    countActivity,      //1
+    listActivity,       //2
+    listRepo,           //3
+    listUser,           //4
+    listCatalog,        //5
+    getUserInfo,        //6
+    getCatalogInfo,     //7
+    createRepo,         //8
+    registerUser,       //9
+    registerCatalog,    //10
+    uploadFile,         //11
+    searchStorage,      //12
+    downloadFile        //13
 }

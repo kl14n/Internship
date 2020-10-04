@@ -9,15 +9,16 @@ const errorHandler = require('src/middlewares/error-handler');
 app.use(bodyParser.urlencoded({
     extended: false
 }));
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
 
 // api routes
-app.use('/accounts', require('./src/routes/routes'));
+app.use('/accounts', require('./src/controllers/controller'));
 
 // swagger docs route
-app.use('/api-docs', require('./src/routes/swagger'));
+app.use('/api-docs', require('./src/middlewares/swagger'));
 
 // global error handler
 app.use(errorHandler);
