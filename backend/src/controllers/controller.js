@@ -6,6 +6,25 @@ const authorize = require('src/middlewares/authorize')
 const Role = require('src/database/role');
 const accountService = require('src/services/account.service');
 
+const setup = require('src/_gRPC/class/setup');
+const grpc = require('src/_gRPC/grpc');
+
+// gRPC 
+router.post('/countActivity', requestMessage);
+// router.post('/listActivity', grpc.listActivity());
+// router.post('/listRepo', grpc.listRepo());
+// router.post('/listUser', grpc.listUser());
+// router.post('/listCatalog', grpc.listCatalog());
+// router.post('/getUserInfo', grpc.getUserInfo());
+// router.post('/getCatalogInfo', grpc.getCatalogInfo());
+// router.post('/createRepo', grpc.createRepo());
+// router.post('/registerUser', grpc.registerUser());
+// router.post('/registerCatalog', grpc.registerCatalog());
+// router.post('/uploadFile', grpc.uploadFile());
+// router.post('/searchStorage', grpc.searchStorage());
+// router.post('/downloadFile', grpc.downloadFile());
+
+
 // routes
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/refresh-token', refreshToken);
@@ -22,6 +41,14 @@ router.put('/:id', authorize(), updateSchema, update);
 router.delete('/:id', authorize(), _delete);
 
 module.exports = router;
+
+function requestMessage(request) {
+    let req = new setup (request);
+    grpc.countActivity(req);
+}
+
+
+
 
 function authenticateSchema(req, res, next) {
     const schema = Joi.object({

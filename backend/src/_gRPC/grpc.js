@@ -29,12 +29,8 @@ const client = new storageManager.StorageManager('localhost:50050', grpc.credent
 // System Log
 
 // 1
-countActivity = async() =>{
-    let request = new setup (
-        'SystemLog',
-        'countActivity',
-        {}
-    )
+countActivity = async(request) =>{
+    
     try {
         await client.setup(request.toRequest(), (error, response) => {
             if(error){

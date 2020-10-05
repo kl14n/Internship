@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require("crypto");
 const sendEmail = require('src/middlewares/send-email');
 const db = require('src/database/db');
-const Role = require('../controllers/node_modules/src/database/role');
+const Role = require('src/database/role');
 
 module.exports = {
     authenticate,
