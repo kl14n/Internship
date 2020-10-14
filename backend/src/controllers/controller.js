@@ -1,16 +1,22 @@
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const router = express.Router();
+const fs = require('fs');
+
+
 const Joi = require('joi');
 const validateRequest = require('src/middlewares/validate-request');
 const authorize = require('src/middlewares/authorize')
 const Role = require('src/database/role');
 const accountService = require('src/services/account.service');
 
+// grpc
 const setup = require('src/_gRPC/class/setup');
 const grpc = require('src/_gRPC/grpc');
 
+
 // gRPC 
-router.post('/countActivity', requestMessage);
+router.post('/systemlog', system_log);
 // router.post('/listActivity', grpc.listActivity());
 // router.post('/listRepo', grpc.listRepo());
 // router.post('/listUser', grpc.listUser());
@@ -20,9 +26,113 @@ router.post('/countActivity', requestMessage);
 // router.post('/createRepo', grpc.createRepo());
 // router.post('/registerUser', grpc.registerUser());
 // router.post('/registerCatalog', grpc.registerCatalog());
-// router.post('/uploadFile', grpc.uploadFile());
-// router.post('/searchStorage', grpc.searchStorage());
-// router.post('/downloadFile', grpc.downloadFile());
+router.post('/searchStorage', system_log);
+router.get('/download/:path', downloadFile);
+router.post('/upload/:repo_id',
+    fileUpload({
+        createParentPath: true,
+        safeFileNames: true,
+        preserveExtension: 10,
+        useTempFiles: true,
+        tempFileDir: 'src/cache/upload/'
+    }), uploadFile)
+
+
+async function uploadFile(req, res) {
+    try {
+        if(!req.files) {
+            res.send({
+                status: false,
+                message: 'No file uploaded'
+            });
+        } else {
+            //Use the name of the input field to retrieve the uploaded file
+            let up = req.files.up;
+            
+            //Use the mv() method to place the file in upload directory
+            // up.mv('src/_gRPC/data/upload/' + up.name);
+
+            let request = {
+                id: req.params.repo_id,
+                name: up.name.split('.').shift(),
+                type: up.name.split('.').pop(),
+                size: up.size
+            }
+
+            grpc.uploadFile(request)
+
+            //send response
+            res.send({
+                status: '200',
+                message: 'File is uploaded',
+                data: {
+                    name: up.name,
+                    mimetype: up.mimetype,
+                    size: up.size
+                }
+            });
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+
+async function downloadFile(req, res) {
+    const meta = req.params.path.split('.');
+    const request = {
+        path: req.params.path,
+        name: meta[2],
+        type: meta[3]
+    }
+
+    grpc.downloadFile(request).then(path => {
+        res.download(path, function (err) {
+            if (err) throw err
+            fs.unlinkSync(path)
+        })
+    }).catch(err => {
+        console.log(err)
+    })
+}
+
+
+
+
+function system_log(req, res, next){
+    let request = new setup(
+        req.body.route,
+        req.body.jsonAction,
+        req.body.jsonParam
+    )
+    grpc.systemLog(request).then(response => {
+
+        const responseObject = ({
+            system: JSON.parse(response.system),
+            action: JSON.parse(response.action),
+            result: JSON.parse(response.result)
+        })
+
+        res.json(responseObject)
+
+    }).catch(err => {
+        console.log(err)
+    })
+}
+
+
+// function uploadFile(req, res, next){
+//     let request = new setup(
+//         req.body.route,
+//         req.body.jsonAction,
+//         req.body.jsonParam
+//     )
+//     grpc.countActivity(request).then(response => {
+//         res.json(response)
+//     }).catch(err => {
+//         console.log(err)
+//     })
+// }
 
 
 // routes
@@ -42,10 +152,6 @@ router.delete('/:id', authorize(), _delete);
 
 module.exports = router;
 
-function requestMessage(request) {
-    let req = new setup (request);
-    grpc.countActivity(req);
-}
 
 
 

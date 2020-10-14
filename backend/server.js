@@ -7,7 +7,7 @@ const cors = require('cors');
 const errorHandler = require('src/middlewares/error-handler');
 
 app.use(bodyParser.urlencoded({
-    extended: false
+    extended: true
 }));
 
 app.use(bodyParser.json());
