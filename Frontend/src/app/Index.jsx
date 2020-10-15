@@ -26,6 +26,7 @@ function App() {
                 <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />
                 <PrivateRoute exact path="/" component={Home} />
                 <PrivateRoute path="/profile" component={Profile} />
+                <PrivateRoute path="/upload" component={Profile} />
                 <PrivateRoute path="/admin" roles={[Role.Admin]} component={Admin} />
                 <Route path="/account" component={Account} />
                 <Redirect from="*" to="/" />
@@ -35,3 +36,5 @@ function App() {
 }
 
 export { App }; 
+
+// 11

@@ -1,13 +1,13 @@
 {
     "connectionString": "mongodb+srv://admin:bl@cK1o7Us@userdb.quj8g.mongodb.net/UserDB?retryWrites=true&w=majority",
     "secret": "ff1c3c627ff14d12839c5ab64c64df3ed0e1eb6d1a444505b1821706a95bbe5f",
-    "emailFrom": "davion33@ethereal.email",
+    "emailFrom": "USTH Data Lake",
     "smtpOptions": {
-        "host": "smtp.ethereal.email",
+        "host": "smtp.gmail.com",
         "port": 587,
         "auth": {
-            "user": "davion33@ethereal.email",
-            "pass": "MZM9kTbbVZyNrUxqqP"
+            "user": "vietdung1607@gmail.com",
+            "pass": "bl@cK1o7Us"
         }
     }
 }

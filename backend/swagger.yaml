@@ -682,11 +682,12 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
 
+# -----------------------------------------------------------------------------------------------------
   /accounts/SystemLog/countActivity:
       post:
         summary:
         tags:
-          - Sestem Log
+          - System Log
         operationId: countActivity
         requestBody:
           required: true
@@ -748,12 +749,11 @@ paths:
                     message:
                       type: string
                       example: "The request action is incorrect"
-
   /accounts/SystemLog/listActivity:
       post:
         summary:
         tags:
-          - Sestem Log
+          - System Log
         operationId: listActivity
         requestBody:
           required: true
@@ -815,12 +815,11 @@ paths:
                     message:
                       type: string
                       example: "The request action is incorrect"
-
   /accounts/SystemLog/listRepo:
       post:
         summary:
         tags:
-          - Sestem Log
+          - System Log
         operationId: listRepository
         requestBody:
           required: true
@@ -868,10 +867,7 @@ paths:
                       properties:
                         response:
                           type: object
-                          properties:
-                            row_count:
-                              type: string
-                              example: "0"
+                          example: {}
           "400":
             description: The request action is incorrect
             content:
@@ -887,7 +883,7 @@ paths:
       post:
         summary:
         tags:
-          - Sestem Log
+          - System Log
         operationId: listUser
         requestBody:
           required: true
@@ -935,10 +931,7 @@ paths:
                       properties:
                         response:
                           type: object
-                          properties:
-                            row_count:
-                              type: string
-                              example: "0"
+                          example: {}
           "400":
             description: The request action is incorrect
             content:
@@ -954,7 +947,7 @@ paths:
       post:
         summary:
         tags:
-          - Sestem Log
+          - System Log
         operationId: listCatalog
         requestBody:
           required: true
@@ -996,16 +989,13 @@ paths:
                               example: "list catalog log - done"
                             status:
                               type: string
-                              example: "succes"
+                              example: "success"
                     result:
                       type: object
                       properties:
                         response:
                           type: object
-                          properties:
-                            row_count:
-                              type: string
-                              example: "0"
+                          example: {}
           "400":
             description: The request action is incorrect
             content:
@@ -1021,7 +1011,7 @@ paths:
       post:
         summary:
         tags:
-          - Sestem Log
+          - System Log
         operationId: getUserInfo
         requestBody:
           required: true
@@ -1066,7 +1056,41 @@ paths:
                               example: "get an repository user info - done"
                             status:
                               type: string
-                              example: "succes"
+                              example: "success"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          example: {}
+          "3":
+            description: Invalid
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "3"
+                            message:
+                              type: string
+                              example: "No user with such name"
+                            status:
+                              type: string
+                              example: "error"
                     result:
                       type: object
                       properties:
@@ -1076,20 +1100,306 @@ paths:
                             row_count:
                               type: string
                               example: "0"
-          "400":
-            description: The request action is incorrect
+
+  /accounts/SystemLog/getCatalogInfo:
+      post:
+        summary:
+        tags:
+          - System Log
+        operationId: getCatalogInfo
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: ""
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
             content:
               application/json:
                 schema:
                   type: object
                   properties:
-                    message:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "get an catalog info - done"
+                            status:
+                              type: string
+                              example: "success"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          example: {}
+          "3":
+            description: Invalid
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "3"
+                            message:
+                              type: string
+                              example: "No catalog with such name"
+                            status:
+                              type: string
+                              example: "error"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            row_count:
+                              type: string
+                              example: "0"
+
+  /accounts/StorageManager/createRepo:
+      post:
+        summary:
+        tags:
+          - Storage Manager
+        operationId: createRepo
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                        example: "/hv_demo/repo/internship_demo"
+                      schema:
+                        type: object
+                        properties:
+                          fields:
+                            type: array
+                            example: []
+                          describe:
+                            type: string
+                            example: ''
+                          type:
+                            type: string
+                            example: 'DIR'
+                          status:
+                            type: string
+                            example: ''
+                          notes:
+                            type: string
+                            example: ''
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "create new repo - done"
+                            status:
+                              type: string
+                              example: "success"
+                    result:
                       type: string
-                      example: "The request action is incorrect"
+                      example: ""
+          "3":
+            description: Invalid
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "3"
+                            message:
+                              type: string
+                              example: "Path has already exist"
+                            status:
+                              type: string
+                              example: "create repo error"
+                    result:
+                      type: string
+                      example: ""
 
-
-
-
+  /accounts/FileQuery/searchStorage:
+      post:
+        summary:
+        tags:
+          - Storage Manager
+        operationId: searchStorage
+        requestBody:
+          required: true
+          content:
+            application/json:
+              expr:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    properties:
+                      repoId:
+                        type: string
+                        example: "0"
+                      schema:
+                        type: object
+                        properties:
+                          path:
+                            type: string
+                            example: '/hv_demo/repo/internship_demo/'
+                          select:
+                            type: array
+                            example: []
+                          where:
+                            type: array
+                            example: []
+                          order_by:
+                            type: object
+                            example: {}
+                          limit:
+                            type: string
+                            example: ''
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "create new repo - done"
+                            status:
+                              type: string
+                              example: "success"
+                    result:
+                      type: string
+                      example: ""
+          "3":
+            description: Invalid
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "3"
+                            message:
+                              type: string
+                              example: "Path has already exist"
+                            status:
+                              type: string
+                              example: "create repo error"
+                    result:
+                      type: string
+                      example: ""
 components:
   securitySchemes:
     bearerAuth:
