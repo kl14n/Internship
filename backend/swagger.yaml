@@ -12,6 +12,8 @@ paths:
   /accounts/authenticate:
     post:
       summary: Authenticate account credentials and return a JWT token and a cookie with a refresh token
+      tags:
+        - Security
       description: Accounts must be verified before authenticating.
       operationId: authenticate
       requestBody:
@@ -84,6 +86,8 @@ paths:
   /accounts/refresh-token:
     post:
       summary: Use a refresh token to generate a new JWT token and a new refresh token
+      tags:
+        - Security
       description: The refresh token is sent and returned via cookies.
       operationId: refreshToken
       parameters:
@@ -147,6 +151,8 @@ paths:
   /accounts/revoke-token:
     post:
       summary: Revoke a refresh token
+      tags:
+        - Security
       description: Admin users can revoke the tokens of any account, regular users can only revoke their own tokens.
       operationId: revokeToken
       security:
@@ -193,6 +199,8 @@ paths:
   /accounts/register:
     post:
       summary: Register a new user account and send a verification email
+      tags:
+        - Security
       description: The first account registered in the system is assigned the `Admin` role, other accounts are assigned the `User` role.
       operationId: register
       requestBody:
@@ -244,6 +252,8 @@ paths:
   /accounts/verify-email:
     post:
       summary: Verify a new account with a verification token received by email after registration
+      tags:
+        - Security
       operationId: verifyEmail
       requestBody:
         required: true
@@ -281,6 +291,8 @@ paths:
   /accounts/forgot-password:
     post:
       summary: Submit email address to reset the password on an account
+      tags:
+        - Security
       operationId: forgotPassword
       requestBody:
         required: true
@@ -308,6 +320,8 @@ paths:
   /accounts/validate-reset-token:
     post:
       summary: Validate the reset password token received by email after submitting to the /accounts/forgot-password route
+      tags:
+        - Security
       operationId: validateResetToken
       requestBody:
         required: true
@@ -345,6 +359,8 @@ paths:
   /accounts/reset-password:
     post:
       summary: Reset the password for an account
+      tags:
+        - Security
       operationId: resetPassword
       requestBody:
         required: true
@@ -390,6 +406,8 @@ paths:
   /accounts:
     post:
           summary: Create a new account
+          tags:
+            - Security
           description: Restricted to admin users.
           operationId: createAccount
           security:
@@ -473,6 +491,8 @@ paths:
               $ref: "#/components/responses/UnauthorizedError"
     get:
       summary: Get a list of all accounts
+      tags:
+        - Security
       description: Restricted to admin users.
       operationId: getAllAccounts
       security:
@@ -524,6 +544,8 @@ paths:
           type: string
     get:
       summary: Get a single account by id
+      tags:
+        - Security
       description: Admin users can access any account, regular users are restricted to their own account.
       operationId: getAccountById
       security:
@@ -566,6 +588,8 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
     put:
       summary: Update an account
+      tags:
+        - Security
       description: Admin users can update any account including role, regular users are restricted to their own account and cannot update role.
       operationId: updateAccount
       security:
@@ -636,6 +660,8 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
     delete:
       summary: Delete an account
+      tags:
+        - Security
       description: Admin users can delete any account, regular users are restricted to their own account.
       operationId: deleteAccount
       security:
@@ -655,6 +681,414 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+
+  /accounts/SystemLog/countActivity:
+      post:
+        summary:
+        tags:
+          - Sestem Log
+        operationId: countActivity
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    example: {}
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "count activity log - done"
+                            status:
+                              type: string
+                              example: "success"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            row_count:
+                              type: string
+                              example: "0"
+          "400":
+            description: The request action is incorrect
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "The request action is incorrect"
+
+  /accounts/SystemLog/listActivity:
+      post:
+        summary:
+        tags:
+          - Sestem Log
+        operationId: listActivity
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    example: {}
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "list activity log - done"
+                            status:
+                              type: string
+                              example: "success"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            row_count:
+                              type: string
+                              example: "0"
+          "400":
+            description: The request action is incorrect
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "The request action is incorrect"
+
+  /accounts/SystemLog/listRepo:
+      post:
+        summary:
+        tags:
+          - Sestem Log
+        operationId: listRepository
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    example: {}
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "list repository log - done"
+                            status:
+                              type: string
+                              example: "success"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            row_count:
+                              type: string
+                              example: "0"
+          "400":
+            description: The request action is incorrect
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "The request action is incorrect"
+                      
+  /accounts/SystemLog/listUser:
+      post:
+        summary:
+        tags:
+          - Sestem Log
+        operationId: listUser
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    example: {}
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "list user log - done"
+                            status:
+                              type: string
+                              example: "success"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            row_count:
+                              type: string
+                              example: "0"
+          "400":
+            description: The request action is incorrect
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "The request action is incorrect"
+
+  /accounts/SystemLog/listCatalog:
+      post:
+        summary:
+        tags:
+          - Sestem Log
+        operationId: listCatalog
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    example: {}
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "list catalog log - done"
+                            status:
+                              type: string
+                              example: "succes"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            row_count:
+                              type: string
+                              example: "0"
+          "400":
+            description: The request action is incorrect
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "The request action is incorrect"
+
+  /accounts/SystemLog/getUserInfo:
+      post:
+        summary:
+        tags:
+          - Sestem Log
+        operationId: getUserInfo
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonParam:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: "HiVi"
+                required:
+                  - jsonParam
+        responses:
+          "200":
+            description: returned status success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    system:
+                      type: object
+                      properties:
+                        error:
+                          type: array
+                          example: []
+                    action:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: "200"
+                            message:
+                              type: string
+                              example: "get an repository user info - done"
+                            status:
+                              type: string
+                              example: "succes"
+                    result:
+                      type: object
+                      properties:
+                        response:
+                          type: object
+                          properties:
+                            row_count:
+                              type: string
+                              example: "0"
+          "400":
+            description: The request action is incorrect
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "The request action is incorrect"
+
+
+
 
 components:
   securitySchemes:

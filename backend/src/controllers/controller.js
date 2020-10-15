@@ -16,7 +16,7 @@ const grpc = require('src/_gRPC/grpc');
 
 
 // gRPC 
-router.post('/systemlog', system_log);
+router.post('/:route/:action', system_log);
 // router.post('/listActivity', grpc.listActivity());
 // router.post('/listRepo', grpc.listRepo());
 // router.post('/listUser', grpc.listUser());
@@ -26,7 +26,6 @@ router.post('/systemlog', system_log);
 // router.post('/createRepo', grpc.createRepo());
 // router.post('/registerUser', grpc.registerUser());
 // router.post('/registerCatalog', grpc.registerCatalog());
-router.post('/searchStorage', system_log);
 router.get('/download/:path', downloadFile);
 router.post('/upload/:repo_id',
     fileUpload({
@@ -101,8 +100,8 @@ async function downloadFile(req, res) {
 
 function system_log(req, res, next){
     let request = new setup(
-        req.body.route,
-        req.body.jsonAction,
+        req.params.route,
+        req.params.action,
         req.body.jsonParam
     )
     grpc.systemLog(request).then(response => {
